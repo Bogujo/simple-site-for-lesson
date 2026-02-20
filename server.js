@@ -31,3 +31,12 @@ app.post("/notes", (req, res) => {
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
 });
+
+app.delete("/notes/:id", (req, res) => {
+  const id = req.params.id;
+
+  db.run("DELETE FROM notes WHERE id = ?", [id], () => {
+    res.json({ success: true });
+  });
+});
+
