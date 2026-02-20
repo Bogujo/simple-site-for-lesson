@@ -108,6 +108,13 @@ textarea {
   resize: vertical;
 }
 
+}
+
+textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
 body.dark input,
 body.dark textarea {
   background: #2a2a2a;
@@ -168,6 +175,7 @@ body.dark li {
   display: flex;
   flex-direction: column;
   overflow-wrap: anywhere;
+  width: 100%;
 }
 
 .note-text {

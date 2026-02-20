@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
 <button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
   🌙
 </button>
@@ -16,6 +17,12 @@
 
   <div id="status" class="status" role="status" aria-live="polite"></div>
 
+  <div id="noteRow" class="input-row">
+    <input id="noteInput" maxlength="2000" placeholder="Введите заметку..." />
+    <button id="addNoteBtn" type="button">Добавить</button>
+  </div>
+
+  <button id="sortBtn" class="sort-btn" type="button">Сортировка: сначала новые</button>
   <form id="noteForm" class="input-row">
     <input id="noteInput" maxlength="2000" placeholder="Введите заметку..." />
     <button type="submit">Добавить</button>
