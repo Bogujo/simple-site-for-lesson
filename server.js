@@ -15,12 +15,20 @@ db.run(`
   )
 `);
 
+// получить заметки с сортировкой
 app.get("/notes", (req, res) => {
-  db.all("SELECT * FROM notes ORDER BY id DESC", [], (err, rows) => {
-    res.json(rows);
-  });
+  const order = req.query.order === "asc" ? "ASC" : "DESC";
+
+  db.all(
+    `SELECT * FROM notes ORDER BY id ${order}`,
+    [],
+    (err, rows) => {
+      res.json(rows);
+    }
+  );
 });
 
+// добавить заметку
 app.post("/notes", (req, res) => {
   const text = req.body.text?.trim();
 
@@ -43,10 +51,7 @@ app.post("/notes", (req, res) => {
   );
 });
 
-app.listen(3000, () => {
-  console.log("Server running at http://localhost:3000");
-});
-
+// удалить заметку
 app.delete("/notes/:id", (req, res) => {
   const id = req.params.id;
 
@@ -55,6 +60,7 @@ app.delete("/notes/:id", (req, res) => {
   });
 });
 
+// редактировать заметку
 app.put("/notes/:id", (req, res) => {
   const id = req.params.id;
   const text = req.body.text?.trim();
@@ -76,4 +82,6 @@ app.put("/notes/:id", (req, res) => {
   );
 });
 
-
+app.listen(3000, () => {
+  console.log("Server running at http://localhost:3000");
+});

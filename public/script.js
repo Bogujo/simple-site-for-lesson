@@ -1,5 +1,7 @@
+let currentOrder = "desc";
+
 async function loadNotes() {
-  const res = await fetch("/notes");
+  const res = await fetch(`/notes?order=${currentOrder}`);
   const notes = await res.json();
 
   const list = document.getElementById("notesList");
@@ -21,6 +23,11 @@ async function loadNotes() {
 
     list.appendChild(li);
   });
+}
+
+function toggleSort() {
+  currentOrder = currentOrder === "desc" ? "asc" : "desc";
+  loadNotes();
 }
 
 async function addNote() {
