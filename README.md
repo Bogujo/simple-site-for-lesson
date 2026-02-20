@@ -45,6 +45,7 @@
 ## API
 - `GET /health` — health-check.
 - `GET /notes?order=asc|desc&limit=20&offset=0` — получить список заметок с пагинацией.
+- `GET /notes?order=asc|desc` — получить список.
 - `POST /notes` — создать заметку, JSON: `{ "text": "..." }`.
 - `PUT /notes/:id` — обновить текст заметки.
 - `PUT /notes/:id/pin` — переключить закрепление.

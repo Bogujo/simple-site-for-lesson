@@ -108,6 +108,13 @@ textarea {
   resize: vertical;
 }
 
+}
+
+textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
 body.dark input,
 body.dark textarea {
   background: #2a2a2a;
