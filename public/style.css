@@ -9,17 +9,20 @@ body {
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding: 60px 12px 24px;
+  padding-top: 60px;
   transition: 0.3s;
 }
+
 
 body.light {
   background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
+
 body.dark {
   background: #121212;
 }
+
 
 .theme-toggle {
   position: fixed;
@@ -43,9 +46,10 @@ body.dark .theme-toggle {
   color: #f0f0f0;
 }
 
+/* карточка */
 .app {
-  width: min(100%, 520px);
-  padding: 24px;
+  width: 450px;
+  padding: 30px;
   border-radius: 16px;
   transition: 0.3s;
 }
@@ -62,30 +66,8 @@ body.dark .app {
 }
 
 h1 {
-  margin: 0 0 20px;
+  margin: 0 0 20px 0;
   text-align: center;
-}
-
-.status {
-  min-height: 20px;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-
-.status.error {
-  color: #b00020;
-}
-
-.status.success {
-  color: #127c37;
-}
-
-body.dark .status.error {
-  color: #ff7d7d;
-}
-
-body.dark .status.success {
-  color: #69d48f;
 }
 
 .input-row {
@@ -139,7 +121,6 @@ li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
   transition: 0.2s;
 }
 
@@ -154,7 +135,6 @@ body.dark li {
 .note-content {
   display: flex;
   flex-direction: column;
-  overflow-wrap: anywhere;
 }
 
 .note-text {
