@@ -26,9 +26,9 @@ async function deleteNote(id) {
 
 async function addNote() {
   const input = document.getElementById("noteInput");
-  const text = input.value;
+  const text = input.value.trim(); // убираем пробелы
 
-  if (!text) return;
+  if (!text) return; // если пусто — не отправляем
 
   await fetch("/notes", {
     method: "POST",

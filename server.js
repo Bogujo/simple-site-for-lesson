@@ -21,7 +21,11 @@ app.get("/notes", (req, res) => {
 });
 
 app.post("/notes", (req, res) => {
-  const { text } = req.body;
+  const text = req.body.text?.trim();
+
+  if (!text) {
+    return res.status(400).json({ error: "empty note" });
+  }
 
   db.run("INSERT INTO notes (text) VALUES (?)", [text], () => {
     res.json({ success: true });
