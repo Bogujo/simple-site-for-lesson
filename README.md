@@ -49,3 +49,51 @@
 - `PUT /notes/:id` — обновить текст заметки.
 - `PUT /notes/:id/pin` — переключить закрепление.
 - `DELETE /notes/:id` — удалить заметку.
+
+## Как не ловить конфликты каждый раз
+
+Если при `git pull` постоянно появляются конфликты в `README.md`, `public/index.html`, `public/script.js`, `public/style.css`, `server.js`, обычно причина в том, что локальная ветка и удалённая долго развиваются независимо.
+
+Рекомендованный поток:
+
+1. Перед началом работы синхронизироваться с основной веткой:
+   ```bash
+   git fetch origin
+   git rebase origin/main
+   ```
+2. Делать небольшие коммиты (не один большой на все файлы сразу).
+3. Перед пушем снова подтянуть свежую `main` через rebase:
+   ```bash
+   git fetch origin
+   git rebase origin/main
+   ```
+4. Только потом пушить:
+   ```bash
+   git push --force-with-lease
+   ```
+
+### Быстрое разрешение конфликтов по текущей задаче
+
+Когда конфликт уже случился:
+
+```bash
+git status
+# открыть каждый конфликтный файл и оставить нужный вариант
+# затем:
+git add README.md public/index.html public/script.js public/style.css server.js
+git rebase --continue
+```
+
+Если нужно отменить неудачный rebase:
+
+```bash
+git rebase --abort
+```
+
+Если хотите "взять всё из вашей ветки" для этих файлов (грубый, но быстрый вариант):
+
+```bash
+git checkout --ours README.md public/index.html public/script.js public/style.css server.js
+git add README.md public/index.html public/script.js public/style.css server.js
+git rebase --continue
+```
