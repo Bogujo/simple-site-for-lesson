@@ -11,16 +11,18 @@ db.run(`
   CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     text TEXT,
-    created_at TEXT
+    created_at TEXT,
+    pinned INTEGER DEFAULT 0
   )
 `);
 
-// получить заметки с сортировкой
+
 app.get("/notes", (req, res) => {
   const order = req.query.order === "asc" ? "ASC" : "DESC";
 
   db.all(
-    `SELECT * FROM notes ORDER BY id ${order}`,
+    `SELECT * FROM notes 
+     ORDER BY pinned DESC, id ${order}`,
     [],
     (err, rows) => {
       res.json(rows);
@@ -28,7 +30,7 @@ app.get("/notes", (req, res) => {
   );
 });
 
-// добавить заметку
+
 app.post("/notes", (req, res) => {
   const text = req.body.text?.trim();
 
@@ -51,18 +53,15 @@ app.post("/notes", (req, res) => {
   );
 });
 
-// удалить заметку
-app.delete("/notes/:id", (req, res) => {
-  const id = req.params.id;
 
-  db.run("DELETE FROM notes WHERE id = ?", [id], () => {
+app.delete("/notes/:id", (req, res) => {
+  db.run("DELETE FROM notes WHERE id = ?", [req.params.id], () => {
     res.json({ success: true });
   });
 });
 
-// редактировать заметку
+
 app.put("/notes/:id", (req, res) => {
-  const id = req.params.id;
   const text = req.body.text?.trim();
 
   if (!text) {
@@ -75,11 +74,30 @@ app.put("/notes/:id", (req, res) => {
 
   db.run(
     "UPDATE notes SET text = ? WHERE id = ?",
-    [text, id],
+    [text, req.params.id],
     () => {
       res.json({ success: true });
     }
   );
+});
+
+
+app.put("/notes/:id/pin", (req, res) => {
+  const id = req.params.id;
+
+  db.get("SELECT pinned FROM notes WHERE id = ?", [id], (err, row) => {
+    if (!row) return res.status(404).json({ error: "not found" });
+
+    const newValue = row.pinned === 1 ? 0 : 1;
+
+    db.run(
+      "UPDATE notes SET pinned = ? WHERE id = ?",
+      [newValue, id],
+      () => {
+        res.json({ success: true });
+      }
+    );
+  });
 });
 
 app.listen(3000, () => {

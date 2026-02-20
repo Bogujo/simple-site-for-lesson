@@ -24,6 +24,7 @@ function toggleTheme() {
 
 function updateThemeIcon(theme) {
   const btn = document.getElementById("themeToggle");
+  if (!btn) return;
   btn.textContent = theme === "dark" ? "☀️" : "🌙";
 }
 
@@ -43,10 +44,17 @@ async function loadNotes() {
         <div class="note-date">${note.created_at || ""}</div>
       </div>
       <div class="note-actions">
+        <button onclick="togglePin(${note.id})">
+          ${note.pinned === 1 ? "📌" : "📍"}
+        </button>
         <button onclick="editNote(${note.id}, \`${note.text.replace(/`/g, "\\`")}\`)">✏️</button>
         <button onclick="deleteNote(${note.id})">❌</button>
       </div>
     `;
+
+    if (note.pinned === 1) {
+      li.classList.add("pinned");
+    }
 
     list.appendChild(li);
   });
@@ -83,11 +91,9 @@ async function deleteNote(id) {
 
 async function editNote(id, oldText) {
   const newText = prompt("Редактировать запись:", oldText);
-
   if (!newText) return;
 
   const trimmed = newText.trim();
-
   if (!trimmed) return;
   if (trimmed.length > 25000) return;
 
@@ -95,6 +101,14 @@ async function editNote(id, oldText) {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text: trimmed })
+  });
+
+  loadNotes();
+}
+
+async function togglePin(id) {
+  await fetch(`/notes/${id}/pin`, {
+    method: "PUT"
   });
 
   loadNotes();

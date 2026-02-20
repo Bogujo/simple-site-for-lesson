@@ -13,17 +13,17 @@ body {
   transition: 0.3s;
 }
 
-/* светлая тема */
+
 body.light {
   background: linear-gradient(135deg, #667eea, #764ba2);
 }
 
-/* тёмная тема */
+
 body.dark {
   background: #121212;
 }
 
-/* кнопка темы */
+
 .theme-toggle {
   position: fixed;
   top: 20px;
@@ -167,4 +167,8 @@ body.dark .note-date {
 
 .note-actions button:last-child:hover {
   background: #e63939;
+}
+
+.pinned {
+  border-left: 4px solid #667eea;
 }
