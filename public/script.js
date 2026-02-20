@@ -9,13 +9,17 @@ async function loadNotes() {
     const li = document.createElement("li");
 
     li.innerHTML = `
-      ${note.text}
+      <div class="note-content">
+        <div class="note-text">${note.text}</div>
+        <div class="note-date">${note.created_at || ""}</div>
+      </div>
       <button onclick="deleteNote(${note.id})">❌</button>
     `;
 
     list.appendChild(li);
   });
 }
+
 async function deleteNote(id) {
   await fetch(`/notes/${id}`, {
     method: "DELETE"
@@ -26,9 +30,9 @@ async function deleteNote(id) {
 
 async function addNote() {
   const input = document.getElementById("noteInput");
-  const text = input.value.trim(); // убираем пробелы
+  const text = input.value.trim();
 
-  if (!text) return; // если пусто — не отправляем
+  if (!text) return;
 
   await fetch("/notes", {
     method: "POST",

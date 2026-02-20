@@ -10,7 +10,8 @@ app.use(express.static("public"));
 db.run(`
   CREATE TABLE IF NOT EXISTS notes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    text TEXT
+    text TEXT,
+    created_at TEXT
   )
 `);
 
@@ -27,9 +28,19 @@ app.post("/notes", (req, res) => {
     return res.status(400).json({ error: "empty note" });
   }
 
-  db.run("INSERT INTO notes (text) VALUES (?)", [text], () => {
-    res.json({ success: true });
-  });
+  if (text.length > 25000) {
+    return res.status(400).json({ error: "too long" });
+  }
+
+  const createdAt = new Date().toLocaleString();
+
+  db.run(
+    "INSERT INTO notes (text, created_at) VALUES (?, ?)",
+    [text, createdAt],
+    () => {
+      res.json({ success: true });
+    }
+  );
 });
 
 app.listen(3000, () => {

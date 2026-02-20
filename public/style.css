@@ -92,3 +92,18 @@ li button {
 li button:hover {
   background: #e63939;
 }
+
+.note-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.note-text {
+  font-size: 14px;
+}
+
+.note-date {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
