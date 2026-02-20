@@ -7,12 +7,16 @@
 </head>
 <body>
 
-<h1>📝 Notes App</h1>
+<div class="app">
+  <h1>Notes App</h1>
 
-<input id="noteInput" placeholder="Введите заметку">
-<button onclick="addNote()">Добавить</button>
+  <div class="input-row">
+    <input id="noteInput" placeholder="Введите заметку..." />
+    <button onclick="addNote()">Добавить</button>
+  </div>
 
-<ul id="notesList"></ul>
+  <ul id="notesList"></ul>
+</div>
 
 <script src="script.js"></script>
 </body>
