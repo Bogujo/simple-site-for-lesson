@@ -1,12 +1,10 @@
 {
   "name": "simple-site-for-lesson",
   "version": "1.0.0",
-  "description": "Учебное приложение заметок на Express + SQLite",
-  "main": "server.js",
+  "description": "",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "test": "node --test"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
