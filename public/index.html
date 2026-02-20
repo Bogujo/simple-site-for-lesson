@@ -7,19 +7,23 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">🌙</button>
+<button class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+  🌙
+</button>
 
 <div class="app">
   <h1>Notes App</h1>
 
   <div id="status" class="status" role="status" aria-live="polite"></div>
 
-  <div id="noteRow" class="input-row">
+  <form id="noteForm" class="input-row">
     <input id="noteInput" maxlength="2000" placeholder="Введите заметку..." />
-    <button id="addNoteBtn" type="button">Добавить</button>
-  </div>
+    <button type="submit">Добавить</button>
+  </form>
 
-  <button id="sortBtn" class="sort-btn" type="button">Сортировка: сначала новые</button>
+  <button id="sortBtn" class="sort-btn" type="button">
+    Сортировка: сначала новые
+  </button>
 
   <ul id="notesList"></ul>
 

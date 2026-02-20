@@ -2,10 +2,11 @@ const PAGE_LIMIT = 20;
 let currentOrder = "desc";
 let currentOffset = 0;
 let hasMore = false;
+let isAppendMode = false;
 
 const statusNode = document.getElementById("status");
+const noteForm = document.getElementById("noteForm");
 const noteInput = document.getElementById("noteInput");
-const addNoteBtn = document.getElementById("addNoteBtn");
 const sortBtn = document.getElementById("sortBtn");
 const themeToggle = document.getElementById("themeToggle");
 const notesList = document.getElementById("notesList");
@@ -22,6 +23,29 @@ const ERROR_MESSAGES = {
 function getErrorMessage(code, fallback) {
   return ERROR_MESSAGES[code] || fallback;
 }
+
+function setStatus(message, type = "info") {
+  if (!statusNode) return;
+  statusNode.textContent = message || "";
+  statusNode.className = `status ${type}`;
+}
+
+function clearStatus() {
+  setStatus("");
+}
+
+function updateSortButtonText() {
+  sortBtn.textContent = currentOrder === "desc"
+    ? "Сортировка: сначала новые"
+    : "Сортировка: сначала старые";
+}
+
+const statusNode = document.getElementById("status");
+const noteForm = document.getElementById("noteForm");
+const noteInput = document.getElementById("noteInput");
+const sortBtn = document.getElementById("sortBtn");
+const themeToggle = document.getElementById("themeToggle");
+const notesList = document.getElementById("notesList");
 
 function setStatus(message, type = "info") {
   if (!statusNode) return;
@@ -67,74 +91,19 @@ function updateThemeIcon(theme) {
 
 function formatDate(value) {
   if (!value) return "";
+
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
+
   return date.toLocaleString();
-}
-
-function updateLoadMoreButton() {
-  if (!loadMoreBtn) return;
-  loadMoreBtn.hidden = !hasMore;
-}
-
-function buildActionButton(label, clickHandler) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.textContent = label;
-  button.addEventListener("click", clickHandler);
-  return button;
-}
-
-function finishInlineEdit(li, note) {
-  li.replaceWith(renderNote(note));
-}
-
-function startInlineEdit(li, note) {
-  const input = document.createElement("textarea");
-  input.className = "edit-input";
-  input.maxLength = 2000;
-  input.value = note.text;
-
-  const saveBtn = buildActionButton("💾", async () => {
-    const nextText = input.value.trim();
-    if (!nextText) {
-      setStatus("Пустую заметку сохранить нельзя", "error");
-      return;
-    }
-
-    try {
-      await requestJson(`/notes/${note.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: nextText }),
-      });
-      note.text = nextText;
-      setStatus("Заметка обновлена", "success");
-      finishInlineEdit(li, note);
-    } catch (error) {
-      setStatus(getErrorMessage(error.message, "Не удалось обновить заметку"), "error");
-    }
-  });
-
-  const cancelBtn = buildActionButton("↩", () => {
-    finishInlineEdit(li, note);
-  });
-
-  const editWrap = document.createElement("div");
-  editWrap.className = "note-content";
-  editWrap.append(input);
-
-  const actions = document.createElement("div");
-  actions.className = "note-actions";
-  actions.append(saveBtn, cancelBtn);
-
-  li.innerHTML = "";
-  li.append(editWrap, actions);
 }
 
 function renderNote(note) {
   const li = document.createElement("li");
-  if (note.pinned === 1) li.classList.add("pinned");
+
+  if (note.pinned === 1) {
+    li.classList.add("pinned");
+  }
 
   const noteContent = document.createElement("div");
   noteContent.className = "note-content";
@@ -152,16 +121,25 @@ function renderNote(note) {
   const noteActions = document.createElement("div");
   noteActions.className = "note-actions";
 
-  const pinBtn = buildActionButton(note.pinned === 1 ? "📌" : "📍", async () => {
-    await togglePin(note.id);
+  const pinBtn = document.createElement("button");
+  pinBtn.type = "button";
+  pinBtn.textContent = note.pinned === 1 ? "📌" : "📍";
+  pinBtn.addEventListener("click", () => {
+    togglePin(note.id);
   });
 
-  const editBtn = buildActionButton("✏️", () => {
-    startInlineEdit(li, note);
+  const editBtn = document.createElement("button");
+  editBtn.type = "button";
+  editBtn.textContent = "✏️";
+  editBtn.addEventListener("click", () => {
+    editNote(note.id, note.text);
   });
 
-  const deleteBtn = buildActionButton("❌", async () => {
-    await deleteNote(note.id);
+  const deleteBtn = document.createElement("button");
+  deleteBtn.type = "button";
+  deleteBtn.textContent = "❌";
+  deleteBtn.addEventListener("click", () => {
+    deleteNote(note.id);
   });
 
   noteActions.append(pinBtn, editBtn, deleteBtn);
@@ -176,7 +154,7 @@ async function requestJson(url, options = {}) {
 
   try {
     payload = await response.json();
-  } catch {
+  } catch (error) {
     payload = null;
   }
 
@@ -188,33 +166,16 @@ async function requestJson(url, options = {}) {
   return payload;
 }
 
-async function loadNotes(append = false) {
-  if (!notesList) return;
-
-  if (!append) {
-    currentOffset = 0;
-  }
-
+async function loadNotes() {
   try {
-    const payload = await requestJson(
-      `/notes?order=${currentOrder}&limit=${PAGE_LIMIT}&offset=${currentOffset}`
-    );
-
-    const items = payload.items || [];
-    if (!append) {
-      notesList.innerHTML = "";
-    }
-
-    items.forEach((note) => {
+    const notes = await requestJson(`/notes?order=${currentOrder}`);
+    notesList.innerHTML = "";
+    notes.forEach((note) => {
       notesList.appendChild(renderNote(note));
     });
-
-    hasMore = Boolean(payload.pagination?.hasMore);
-    currentOffset += items.length;
-    updateLoadMoreButton();
     clearStatus();
   } catch (error) {
-    setStatus(getErrorMessage(error.message, "Не удалось загрузить заметки"), "error");
+    setStatus("Не удалось загрузить заметки", "error");
   }
 }
 
@@ -225,8 +186,8 @@ function toggleSort() {
 }
 
 async function addNote() {
-  if (!noteInput) return;
   const text = noteInput.value.trim();
+
   if (!text) {
     setStatus("Введите текст заметки", "error");
     return;
@@ -243,53 +204,67 @@ async function addNote() {
     setStatus("Заметка добавлена", "success");
     await loadNotes();
   } catch (error) {
-    setStatus(getErrorMessage(error.message, "Не удалось добавить заметку"), "error");
+    setStatus("Не удалось добавить заметку", "error");
   }
 }
 
 async function deleteNote(id) {
   try {
-    await requestJson(`/notes/${id}`, { method: "DELETE" });
+    await requestJson(`/notes/${id}`, {
+      method: "DELETE",
+    });
+
     setStatus("Заметка удалена", "success");
     await loadNotes();
   } catch (error) {
-    setStatus(getErrorMessage(error.message, "Не удалось удалить заметку"), "error");
+    setStatus("Не удалось удалить заметку", "error");
+  }
+}
+
+async function requestJson(url, options = {}) {
+  const response = await fetch(url, options);
+  let payload = null;
+
+  const trimmed = newText.trim();
+  if (!trimmed) {
+    setStatus("Пустую заметку сохранить нельзя", "error");
+    return;
+  }
+
+  try {
+    await requestJson(`/notes/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: trimmed }),
+    });
+
+    setStatus("Заметка обновлена", "success");
+    await loadNotes();
+  } catch (error) {
+    setStatus("Не удалось обновить заметку", "error");
   }
 }
 
 async function togglePin(id) {
   try {
-    await requestJson(`/notes/${id}/pin`, { method: "PUT" });
+    await requestJson(`/notes/${id}/pin`, {
+      method: "PUT",
+    });
+
+    clearStatus();
     await loadNotes();
   } catch (error) {
-    setStatus(getErrorMessage(error.message, "Не удалось закрепить заметку"), "error");
+    setStatus("Не удалось закрепить заметку", "error");
   }
 }
 
-if (addNoteBtn) {
-  addNoteBtn.addEventListener("click", addNote);
-}
+noteForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  addNote();
+});
 
-if (noteInput) {
-  noteInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      addNote();
-    }
-  });
-}
-
-if (sortBtn) {
-  sortBtn.addEventListener("click", toggleSort);
-}
-
-if (loadMoreBtn) {
-  loadMoreBtn.addEventListener("click", () => loadNotes(true));
-}
-
-if (themeToggle) {
-  themeToggle.addEventListener("click", toggleTheme);
-}
+sortBtn.addEventListener("click", toggleSort);
+themeToggle.addEventListener("click", toggleTheme);
 
 applySavedTheme();
 updateSortButtonText();
