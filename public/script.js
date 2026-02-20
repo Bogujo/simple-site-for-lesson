@@ -1,5 +1,32 @@
 let currentOrder = "desc";
 
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem("theme") || "light";
+  document.body.classList.add(savedTheme);
+  updateThemeIcon(savedTheme);
+}
+
+function toggleTheme() {
+  const isDark = document.body.classList.contains("dark");
+
+  document.body.classList.remove("light", "dark");
+
+  if (isDark) {
+    document.body.classList.add("light");
+    localStorage.setItem("theme", "light");
+    updateThemeIcon("light");
+  } else {
+    document.body.classList.add("dark");
+    localStorage.setItem("theme", "dark");
+    updateThemeIcon("dark");
+  }
+}
+
+function updateThemeIcon(theme) {
+  const btn = document.getElementById("themeToggle");
+  btn.textContent = theme === "dark" ? "☀️" : "🌙";
+}
+
 async function loadNotes() {
   const res = await fetch(`/notes?order=${currentOrder}`);
   const notes = await res.json();
@@ -73,4 +100,5 @@ async function editNote(id, oldText) {
   loadNotes();
 }
 
+applySavedTheme();
 loadNotes();

@@ -5,20 +5,64 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
   padding-top: 60px;
+  transition: 0.3s;
 }
 
+/* светлая тема */
+body.light {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+/* тёмная тема */
+body.dark {
+  background: #121212;
+}
+
+/* кнопка темы */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+body.light .theme-toggle {
+  background: white;
+}
+
+body.dark .theme-toggle {
+  background: #1e1e1e;
+  color: #f0f0f0;
+}
+
+/* карточка */
 .app {
   width: 450px;
-  background: white;
   padding: 30px;
   border-radius: 16px;
+  transition: 0.3s;
+}
+
+body.light .app {
+  background: white;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+body.dark .app {
+  background: #1e1e1e;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  color: #f0f0f0;
 }
 
 h1 {
@@ -39,6 +83,12 @@ input {
   border: 1px solid #ccc;
 }
 
+body.dark input {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #f0f0f0;
+}
+
 button {
   padding: 8px 12px;
   border: none;
@@ -46,6 +96,7 @@ button {
   color: white;
   border-radius: 8px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
 button:hover {
@@ -64,13 +115,21 @@ ul {
 }
 
 li {
-  background: #f5f7fb;
   padding: 10px 12px;
   margin-bottom: 10px;
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: 0.2s;
+}
+
+body.light li {
+  background: #f5f7fb;
+}
+
+body.dark li {
+  background: #2a2a2a;
 }
 
 .note-content {
@@ -86,6 +145,10 @@ li {
   font-size: 11px;
   color: #888;
   margin-top: 4px;
+}
+
+body.dark .note-date {
+  color: #aaa;
 }
 
 .note-actions {
