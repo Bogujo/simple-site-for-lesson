@@ -107,3 +107,13 @@ li button:hover {
   color: #888;
   margin-top: 4px;
 }
+
+.note-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.note-actions button {
+  padding: 5px 8px;
+  font-size: 12px;
+}

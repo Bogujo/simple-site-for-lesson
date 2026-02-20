@@ -55,3 +55,25 @@ app.delete("/notes/:id", (req, res) => {
   });
 });
 
+app.put("/notes/:id", (req, res) => {
+  const id = req.params.id;
+  const text = req.body.text?.trim();
+
+  if (!text) {
+    return res.status(400).json({ error: "empty note" });
+  }
+
+  if (text.length > 25000) {
+    return res.status(400).json({ error: "too long" });
+  }
+
+  db.run(
+    "UPDATE notes SET text = ? WHERE id = ?",
+    [text, id],
+    () => {
+      res.json({ success: true });
+    }
+  );
+});
+
+

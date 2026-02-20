@@ -13,19 +13,14 @@ async function loadNotes() {
         <div class="note-text">${note.text}</div>
         <div class="note-date">${note.created_at || ""}</div>
       </div>
-      <button onclick="deleteNote(${note.id})">❌</button>
+      <div class="note-actions">
+        <button onclick="editNote(${note.id}, \`${note.text.replace(/`/g, "\\`")}\`)">✏️</button>
+        <button onclick="deleteNote(${note.id})">❌</button>
+      </div>
     `;
 
     list.appendChild(li);
   });
-}
-
-async function deleteNote(id) {
-  await fetch(`/notes/${id}`, {
-    method: "DELETE"
-  });
-
-  loadNotes();
 }
 
 async function addNote() {
@@ -41,6 +36,33 @@ async function addNote() {
   });
 
   input.value = "";
+  loadNotes();
+}
+
+async function deleteNote(id) {
+  await fetch(`/notes/${id}`, {
+    method: "DELETE"
+  });
+
+  loadNotes();
+}
+
+async function editNote(id, oldText) {
+  const newText = prompt("Редактировать запись:", oldText);
+
+  if (!newText) return;
+
+  const trimmed = newText.trim();
+
+  if (!trimmed) return;
+  if (trimmed.length > 25000) return;
+
+  await fetch(`/notes/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text: trimmed })
+  });
+
   loadNotes();
 }
 
