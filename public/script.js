@@ -1,44 +1,4 @@
-const PAGE_LIMIT = 20;
 let currentOrder = "desc";
-let currentOffset = 0;
-let hasMore = false;
-let isAppendMode = false;
-
-const statusNode = document.getElementById("status");
-const noteForm = document.getElementById("noteForm");
-const noteInput = document.getElementById("noteInput");
-const sortBtn = document.getElementById("sortBtn");
-const themeToggle = document.getElementById("themeToggle");
-const notesList = document.getElementById("notesList");
-const loadMoreBtn = document.getElementById("loadMoreBtn");
-
-const ERROR_MESSAGES = {
-  empty_note: "Введите текст заметки",
-  invalid_id: "Некорректный ID заметки",
-  not_found: "Заметка не найдена",
-  too_many_requests: "Слишком много запросов, попробуйте позже",
-  database_error: "Ошибка базы данных",
-};
-
-function getErrorMessage(code, fallback) {
-  return ERROR_MESSAGES[code] || fallback;
-}
-
-function setStatus(message, type = "info") {
-  if (!statusNode) return;
-  statusNode.textContent = message || "";
-  statusNode.className = `status ${type}`;
-}
-
-function clearStatus() {
-  setStatus("");
-}
-
-function updateSortButtonText() {
-  sortBtn.textContent = currentOrder === "desc"
-    ? "Сортировка: сначала новые"
-    : "Сортировка: сначала старые";
-}
 
 const statusNode = document.getElementById("status");
 const noteForm = document.getElementById("noteForm");
@@ -72,7 +32,9 @@ function applySavedTheme() {
 
 function toggleTheme() {
   const isDark = document.body.classList.contains("dark");
+
   document.body.classList.remove("light", "dark");
+
   if (isDark) {
     document.body.classList.add("light");
     localStorage.setItem("theme", "light");
@@ -221,9 +183,9 @@ async function deleteNote(id) {
   }
 }
 
-async function requestJson(url, options = {}) {
-  const response = await fetch(url, options);
-  let payload = null;
+async function editNote(id, oldText) {
+  const newText = prompt("Редактировать запись:", oldText);
+  if (!newText) return;
 
   const trimmed = newText.trim();
   if (!trimmed) {

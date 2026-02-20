@@ -94,22 +94,14 @@ body.dark .status.success {
   margin-bottom: 15px;
 }
 
-input,
-textarea {
+input {
   flex: 1;
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-family: inherit;
 }
 
-textarea {
-  min-height: 72px;
-  resize: vertical;
-}
-
-body.dark input,
-body.dark textarea {
+body.dark input {
   background: #2a2a2a;
   border: 1px solid #444;
   color: #f0f0f0;
@@ -129,14 +121,9 @@ button:hover {
   background: #5563d6;
 }
 
-.sort-btn,
-.load-more {
+.sort-btn {
   width: 100%;
   margin-bottom: 15px;
-}
-
-.load-more[hidden] {
-  display: none;
 }
 
 ul {
