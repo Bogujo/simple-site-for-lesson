@@ -1,31 +1,262 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Notes App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заметочки | Simple Notes</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="light">
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="logo">
+          <i class="fas fa-sticky-note"></i>
+          Заметочки
+        </h1>
+        <p class="tagline">Простые заметки для каждого дня</p>
+      </div>
+      <div class="header-right">
+        <div class="search-bar">
+          <i class="fas fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Поиск заметок...">
+        </div>
+        <button class="btn-icon" id="filterToggle" title="Фильтры">
+          <i class="fas fa-filter"></i>
+        </button>
+        <button class="btn-icon theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Сменить тему">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </header>
 
-<button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
-  🌙
-</button>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h3><i class="fas fa-list"></i> Категории</h3>
+          <ul class="categories">
+            <li class="active" data-category="all">
+              <i class="fas fa-inbox"></i> Все заметки
+              <span class="count" id="countAll">0</span>
+            </li>
+            <li data-category="pinned">
+              <i class="fas fa-thumbtack"></i> Закрепленные
+              <span class="count" id="countPinned">0</span>
+            </li>
+            <li data-category="recent">
+              <i class="fas fa-clock"></i> Недавние
+              <span class="count" id="countRecent">0</span>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="sidebar-section">
+          <h3><i class="fas fa-tags"></i> Теги</h3>
+          <div class="tags">
+            <span class="tag" data-tag="работа">работа</span>
+            <span class="tag" data-tag="личное">личное</span>
+            <span class="tag" data-tag="идеи">идеи</span>
+            <span class="tag" data-tag="покупки">покупки</span>
+          </div>
+          <input type="text" id="newTagInput" placeholder="Добавить тег...">
+        </div>
+        
+        <button class="btn-secondary" id="exportBtn">
+          <i class="fas fa-download"></i> Экспорт
+        </button>
+      </aside>
 
-<div class="app">
-  <h1>Notes App</h1>
+      <!-- Notes Area -->
+      <div class="notes-area">
+        <!-- Add Note Card -->
+        <div class="add-note-card">
+          <div class="add-note-header">
+            <h3><i class="fas fa-plus-circle"></i> Новая заметка</h3>
+            <div class="priority-selector">
+              <span class="priority-label">Приоритет:</span>
+              <select id="prioritySelect">
+                <option value="1">Низкий</option>
+                <option value="2" selected>Обычный</option>
+                <option value="3">Высокий</option>
+              </select>
+            </div>
+          </div>
+          <textarea id="noteInput" placeholder="Начните писать здесь..."></textarea>
+          <div class="add-note-footer">
+            <div class="note-extra-options">
+              <div class="template-selector">
+                <select id="templateSelect">
+                  <option value="">Без шаблона</option>
+                  <option value="todo">📝 Список дел</option>
+                  <option value="meeting">🤝 Встреча</option>
+                  <option value="idea">💡 Идея</option>
+                  <option value="shopping">🛒 Покупки</option>
+                </select>
+              </div>
+              <div class="theme-selector">
+                <select id="noteThemeSelect">
+                  <option value="default">🎨 Обычная</option>
+                  <option value="blue">🔵 Голубая</option>
+                  <option value="green">🟢 Зеленая</option>
+                  <option value="purple">🟣 Фиолетовая</option>
+                </select>
+              </div>
+            </div>
+            <div class="tag-selector">
+              <button class="btn-tag" data-tag="работа"><i class="fas fa-briefcase"></i> Работа</button>
+              <button class="btn-tag" data-tag="личное"><i class="fas fa-heart"></i> Личное</button>
+              <button class="btn-tag" data-tag="идеи"><i class="fas fa-lightbulb"></i> Идеи</button>
+            </div>
+            <div class="add-note-buttons">
+              <button class="btn-secondary" onclick="saveDraft()" title="Сохранить черновик">
+                <i class="far fa-save"></i>
+              </button>
+              <button class="btn-primary" onclick="addNote()">
+                <i class="fas fa-plus"></i> Добавить
+              </button>
+            </div>
+          </div>
+        </div>
 
-  <div class="input-row">
-    <input id="noteInput" placeholder="Введите заметку..." />
-    <button onclick="addNote()">Добавить</button>
+        <!-- Filter Bar -->
+        <div class="filter-bar" id="filterBar">
+          <div class="filter-group">
+            <span>Сортировка:</span>
+            <select id="sortSelect">
+              <option value="desc">Сначала новые</option>
+              <option value="asc">Сначала старые</option>
+              <option value="priority">По приоритету</option>
+              <option value="alphabetical">По алфавиту</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <span>Показывать:</span>
+            <select id="viewSelect">
+              <option value="all">Все</option>
+              <option value="pinned">Закрепленные</option>
+              <option value="unpinned">Незакрепленные</option>
+            </select>
+          </div>
+          <button class="btn-secondary" onclick="clearFilters()">
+            <i class="fas fa-times"></i> Сбросить
+          </button>
+        </div>
+
+        <!-- Notes Grid -->
+        <div class="notes-grid" id="notesGrid"></div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState">
+          <i class="fas fa-clipboard"></i>
+          <h3>Заметок пока нет</h3>
+          <p>Добавьте свою первую заметку, чтобы начать</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <p>© 2026 Заметочки. Все права защищены.</p>
+        <div class="footer-links">
+          <a href="#" onclick="showHelpModal()"><i class="fas fa-question-circle"></i> Помощь</a>
+          <a href="#" onclick="showSettingsModal()"><i class="fas fa-cog"></i> Настройки</a>
+          <a href="#" onclick="showAboutModal()"><i class="fas fa-info-circle"></i> О проекте</a>
+        </div>
+      </div>
+    </footer>
   </div>
 
-  <button onclick="toggleSort()" class="sort-btn">
-    Сменить сортировку
-  </button>
+  <!-- Confirmation Modal -->
+  <div class="modal" id="confirmModal">
+    <div class="modal-content">
+      <h3><i class="fas fa-exclamation-triangle"></i> Подтверждение</h3>
+      <p id="confirmMessage">Вы уверены, что хотите удалить эту заметку?</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+        <button class="btn-danger" id="confirmActionBtn">Подтвердить</button>
+      </div>
+    </div>
+  </div>
 
-  <ul id="notesList"></ul>
-</div>
+  <!-- About Modal -->
+  <div class="modal" id="aboutModal">
+    <div class="modal-content">
+      <h3><i class="fas fa-info-circle"></i> О проекте</h3>
+      <p>Этот проект — простое приложение для заметок, созданное в учебных целях.</p>
+      <p><strong>Автор:</strong> Bogujo</p>
+      <p><strong>Технологии:</strong> Node.js, Express, SQLite, HTML/CSS/JavaScript</p>
+      <p><strong>Год:</strong> 2026</p>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="closeAboutModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
 
-<script src="script.js"></script>
+  <!-- Help Modal -->
+  <div class="modal" id="helpModal">
+    <div class="modal-content">
+      <h3><i class="fas fa-question-circle"></i> Помощь</h3>
+      <div class="help-content">
+        <h4>Как пользоваться приложением:</h4>
+        <ul>
+          <li><strong>Добавить заметку:</strong> Введите текст в поле и нажмите "Добавить"</li>
+          <li><strong>Закрепить заметку:</strong> Нажмите на иконку 📌 в правом верхнем углу заметки</li>
+          <li><strong>Редактировать:</strong> Нажмите на иконку ✏️</li>
+          <li><strong>Удалить:</strong> Нажмите на иконку 🗑️</li>
+          <li><strong>Поиск:</strong> Используйте поисковую строку в верхней части</li>
+          <li><strong>Фильтрация:</strong> Используйте боковую панель для фильтрации по категориям и тегам</li>
+          <li><strong>Сортировка:</strong> Выберите нужный вариант сортировки в панели фильтров</li>
+        </ul>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="closeHelpModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <h3><i class="fas fa-cog"></i> Настройки</h3>
+      <div class="settings-content">
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="autoSaveSetting"> Автосохранение при редактировании
+          </label>
+        </div>
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="confirmDeleteSetting" checked> Запрашивать подтверждение при удалении
+          </label>
+        </div>
+        <div class="setting-item">
+          <label>
+            <input type="checkbox" id="showAnimationsSetting" checked> Показывать анимации
+          </label>
+        </div>
+        <div class="setting-item">
+          <label for="notesPerPage">Заметок на странице:</label>
+          <select id="notesPerPage">
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeSettingsModal()">Отмена</button>
+        <button class="btn-primary" onclick="saveSettings()">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
